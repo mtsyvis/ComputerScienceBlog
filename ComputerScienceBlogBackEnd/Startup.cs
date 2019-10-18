@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ComputerScienceBlogBackEnd.Models;
 
 namespace ComputerScienceBlogBackEnd
 {
@@ -25,6 +26,10 @@ namespace ComputerScienceBlogBackEnd
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<ComputerScienceBlogDatabaseSettings>(Configuration.GetSection(nameof(ComputerScienceBlogDatabaseSettings)));
+            services.AddSingleton<IComputerScienceBlogDatabaseSettings>(sp =>
+                sp.GetRequiredService<IOptions<ComputerScienceBlogDatabaseSettings>>().Value);
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 

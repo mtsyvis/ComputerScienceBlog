@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComputerScienceBlogBackEnd"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComputerScienceBlog.Services", "..\ComputerScienceBlog.Services\ComputerScienceBlog.Services.csproj", "{8EBCA2A7-1DE5-469B-9E92-D7292E92E8ED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComputerScienceBlog.DataAccess", "..\ComputerScienceBlog.DataAccess\ComputerScienceBlog.DataAccess.csproj", "{C0EA03AD-3EC8-462B-8C8E-B6A3A5328238}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComputerScienceBlog.Services.Models", "..\ComputerScienceBlog.Services.Models\ComputerScienceBlog.Services.Models.csproj", "{5C943002-425C-4CAA-9E19-836A47562ECF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{8EBCA2A7-1DE5-469B-9E92-D7292E92E8ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EBCA2A7-1DE5-469B-9E92-D7292E92E8ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8EBCA2A7-1DE5-469B-9E92-D7292E92E8ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0EA03AD-3EC8-462B-8C8E-B6A3A5328238}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0EA03AD-3EC8-462B-8C8E-B6A3A5328238}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0EA03AD-3EC8-462B-8C8E-B6A3A5328238}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0EA03AD-3EC8-462B-8C8E-B6A3A5328238}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C943002-425C-4CAA-9E19-836A47562ECF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C943002-425C-4CAA-9E19-836A47562ECF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C943002-425C-4CAA-9E19-836A47562ECF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C943002-425C-4CAA-9E19-836A47562ECF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
