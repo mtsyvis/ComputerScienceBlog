@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ComputerScienceBlogBackEnd.Models;
+using ComputerScienceBlogBackEnd.Services;
 
 namespace ComputerScienceBlogBackEnd
 {
@@ -29,6 +30,8 @@ namespace ComputerScienceBlogBackEnd
             services.Configure<ComputerScienceBlogDatabaseSettings>(Configuration.GetSection(nameof(ComputerScienceBlogDatabaseSettings)));
             services.AddSingleton<IComputerScienceBlogDatabaseSettings>(sp =>
                 sp.GetRequiredService<IOptions<ComputerScienceBlogDatabaseSettings>>().Value);
+
+            services.AddSingleton<UserService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
