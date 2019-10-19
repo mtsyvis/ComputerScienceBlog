@@ -13,12 +13,12 @@ using ComputerScienceBlogBackEnd.Helpers;
 
 namespace ComputerScienceBlogBackEnd.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/users")]
     [ApiController]
     [Produces("application/json")]
     public class UsersController : ControllerBase
     {
-        private IUserService _userService;
+        private readonly IUserService _userService;
 
         public UsersController(IUserService userService)
         {

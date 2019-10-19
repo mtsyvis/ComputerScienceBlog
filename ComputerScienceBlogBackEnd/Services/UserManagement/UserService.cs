@@ -1,5 +1,6 @@
 ﻿using ComputerScienceBlogBackEnd.DataAccess;
 using ComputerScienceBlogBackEnd.Helpers;
+using ComputerScienceBlogBackEnd.Infrastructure.Exceptions;
 using ComputerScienceBlogBackEnd.Repositories;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -28,11 +29,9 @@ namespace ComputerScienceBlogBackEnd.Services.UserManagement
         {
             var user = _repository.GetAll().SingleOrDefault(x => x.UserName == userName && x.Password == password);
 
-            // return null if user not found
             if (user == null)
                 return null;
 
-            // authentication successful so generate jwt token
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -55,6 +54,12 @@ namespace ComputerScienceBlogBackEnd.Services.UserManagement
 
         public void Create(User user)
         {
+            var dbUsers = _repository.GetAll().Where(u => u.UserName == user.UserName || u.Email == user.Email).ToArray();
+            if(dbUsers.Length > 0)
+            {
+                throw new RequestedResourceHasConflictException("User with that username or mail already exists");
+            }
+
             _repository.Create(user);
         }
 

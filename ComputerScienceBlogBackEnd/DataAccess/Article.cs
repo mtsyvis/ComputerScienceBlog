@@ -12,10 +12,15 @@ namespace ComputerScienceBlogBackEnd.DataAccess
 
         public string Title { get; set; }
 
+        public string Text { get; set; }
+
         public string CreatedUser { get; set; }
 
         public DateTime CreatedDate { get; set; }
 
-        public string Category { get; set; }
+        public Category[] Categories { get; set; }
+
+        [BsonIgnoreIfNull]
+        public Comment[] Comments { get; set; }
     }
 }
