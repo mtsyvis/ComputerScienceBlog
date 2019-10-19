@@ -9,7 +9,7 @@ namespace ComputerScienceBlogBackEnd.Repositories
         void Update(string id, User userIn);
         void Remove(User userIn);
         void Remove(string id);
-        IEnumerable<User> GetAll();
+        List<User> GetAll();
         User GetById(string id);
     }
 }

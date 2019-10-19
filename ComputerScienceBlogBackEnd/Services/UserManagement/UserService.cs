@@ -1,6 +1,14 @@
-﻿using ComputerScienceBlogBackEnd.Repositories;
+﻿using ComputerScienceBlogBackEnd.DataAccess;
+using ComputerScienceBlogBackEnd.Helpers;
+using ComputerScienceBlogBackEnd.Repositories;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
 
 namespace ComputerScienceBlogBackEnd.Services.UserManagement
 {
@@ -8,54 +16,74 @@ namespace ComputerScienceBlogBackEnd.Services.UserManagement
     {
         private readonly IUserRepository _repository;
 
-        public UserService(IUserRepository userRepository)
+        private readonly AppSettings _appSettings;
+
+        public UserService(IOptions<AppSettings> appSettings, IUserRepository userRepository)
         {
+            _appSettings = appSettings.Value;
             _repository = userRepository;
         }
 
-        public UserModel Authenticate(string username, string password)
+        public User Authenticate(string userName, string password)
         {
-            throw new NotImplementedException();
+            var user = _repository.GetAll().SingleOrDefault(x => x.UserName == userName && x.Password == password);
+
+            // return null if user not found
+            if (user == null)
+                return null;
+
+            // authentication successful so generate jwt token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, user.Id.ToString()),
+                    new Claim(ClaimTypes.Role, user.Role)
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            user.Token = tokenHandler.WriteToken(token);
+
+            user.Password = null;
+
+            return user;
         }
 
-        public IEnumerable<UserModel> GetAll()
+        public void Create(User user)
         {
-            throw new NotImplementedException();
+            _repository.Create(user);
         }
 
-        public UserModel GetById(int id)
+        public void Remove(string id)
         {
-            throw new NotImplementedException();
+            _repository.Remove(id);
         }
 
-        //private readonly IMongoCollection<User> _users;
+        public IEnumerable<User> GetAll()
+        {
+            return _repository.GetAll().Select(x => {
+                x.Password = null;
+                return x;
+            });
+        }
 
-        //public UserService(IComputerScienceBlogDatabaseSettings settings)
-        //{
-        //    var client = new MongoClient(settings.ConnectionString);
-        //    var database = client.GetDatabase(settings.DatabaseName);
+        public User GetById(string id)
+        {
+            var user = _repository.GetById(id);
 
-        //    _users = database.GetCollection<User>(settings.UsersCollectionName);
-        //}
+            if (user != null)
+                user.Password = null;
 
-        //public List<User> Get() => _users.Find(user => true).ToList();
+            return user;
+        }
 
-        //public User Get(string id) =>
-        //    _users.Find<User>(user => user.Id == id).FirstOrDefault();
-
-        //public User Create(User user)
-        //{
-        //    _users.InsertOne(user);
-        //    return user;
-        //}
-
-        //public void Update(string id, User userIn) =>
-        //    _users.ReplaceOne(user => user.Id == id, userIn);
-
-        //public void Remove(User userIn) =>
-        //    _users.DeleteOne(user => user.Id == userIn.Id);
-
-        //public void Remove(string id) =>
-        //    _users.DeleteOne(user => user.Id == id);
+        public void Update(string id, User userIn)
+        {
+            _repository.Update(id, userIn);
+        }
     }
 }

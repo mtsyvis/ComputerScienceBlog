@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using ComputerScienceBlogBackEnd.Services.UserManagement;
+using ComputerScienceBlogBackEnd.DataAccess;
+using ComputerScienceBlogBackEnd.Helpers;
 
 namespace ComputerScienceBlogBackEnd.Controllers
 {
@@ -25,7 +27,7 @@ namespace ComputerScienceBlogBackEnd.Controllers
 
         [AllowAnonymous]
         [HttpPost("authenticate")]
-        public IActionResult Authenticate([FromBody]UserModel userParam)
+        public IActionResult Authenticate([FromBody]User userParam)
         {
             var user = _userService.Authenticate(userParam.UserName, userParam.Password);
 
@@ -35,7 +37,7 @@ namespace ComputerScienceBlogBackEnd.Controllers
             return Ok(user);
         }
 
-        [Authorize/*(Roles = Role.Admin)*/]
+        //[Authorize]
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -44,7 +46,7 @@ namespace ComputerScienceBlogBackEnd.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public IActionResult GetById(string id)
         {
             var user = _userService.GetById(id);
 
@@ -54,14 +56,53 @@ namespace ComputerScienceBlogBackEnd.Controllers
             }
 
             // only allow admins to access other user records
-            var currentUserId = int.Parse(User.Identity.Name);
-            //if (id != currentUserId && !User.IsInRole(Role.Admin))
-            //{
-            //    return Forbid();
-            //}
+            var currentUserId = User.Identity.Name;
+            if (id != currentUserId && !User.IsInRole(Role.Admin))
+            {
+                return Forbid();
+            }
 
             return Ok(user);
         }
+
+        [HttpPost]
+        public ActionResult<User> Create(User user)
+        {
+            _userService.Create(user);
+
+            return CreatedAtRoute("GetBook", new { id = user.Id.ToString() }, user);
+        }
+
+        [HttpPut("{id:length(24)}")]
+        public IActionResult Update(string id, User userIn)
+        {
+            var user = _userService.GetById(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            _userService.Update(id, userIn);
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id:length(24)}")]
+        public IActionResult Delete(string id)
+        {
+            var user = _userService.GetById(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            _userService.Remove(user.Id);
+
+            return NoContent();
+        }
+
 
         //private readonly UserService _userService;
 

@@ -55,14 +55,13 @@ namespace ComputerScienceBlogBackEnd
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
-                    ValidateAudience = false
+                    ValidateAudience = false    
                 };
             });
 
             // configure DI for application services
-            services.AddScoped<IUserService, UserService>();
-
-            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserRepository, UserRepository>()
+                .AddScoped<IUserService, UserService>();
 
             services.AddMvc()
                 .AddJsonOptions(options => options.UseMemberCasing())
@@ -91,7 +90,6 @@ namespace ComputerScienceBlogBackEnd
                 });
 
             app.UseHttpsRedirection();
-
             app.UseAuthentication();
             app.UseMvc(routes =>
             {

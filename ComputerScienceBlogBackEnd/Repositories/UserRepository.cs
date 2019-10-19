@@ -33,7 +33,7 @@ namespace ComputerScienceBlogBackEnd.Repositories
         public void Remove(string id) =>
             _users.DeleteOne(user => user.Id == id);
 
-        public IEnumerable<User> GetAll() => _users.Find(user => true).ToList();
+        public List<User> GetAll() => _users.Find(user => true).ToList();
 
         public User GetById(string id) =>
             _users.Find<User>(user => user.Id == id).FirstOrDefault();
