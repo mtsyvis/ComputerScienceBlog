@@ -1,4 +1,4 @@
-﻿namespace ComputerScienceBlogBackEnd.Models
+﻿namespace ComputerScienceBlogBackEnd.DataAccess
 {
     public interface IComputerScienceBlogDatabaseSettings
     {
