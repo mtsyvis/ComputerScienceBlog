@@ -9,13 +9,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ComputerScienceBlogBackEnd.Controllers
 {
+    [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly UserService _userService;
 
-        public UserController(UserService userService)
+        public UsersController(UserService userService)
         {
             _userService = userService;
         }
