@@ -11,6 +11,7 @@ using ComputerScienceBlogBackEnd.Helpers;
 using ComputerScienceBlogBackEnd.Services.UserManagement;
 using System.Text;
 using ComputerScienceBlogBackEnd.Repositories;
+using ComputerScienceBlogBackEnd.Services.ArticleManagement;
 
 namespace ComputerScienceBlogBackEnd
 {
@@ -61,7 +62,8 @@ namespace ComputerScienceBlogBackEnd
 
             // configure DI for application services
             services.AddScoped<IUserRepository, UserRepository>()
-                .AddScoped<IUserService, UserService>();
+                .AddScoped<IUserService, UserService>()
+                .AddScoped<IArticleService, ArticleService>();
 
             services.AddMvc()
                 .AddJsonOptions(options => options.UseMemberCasing())

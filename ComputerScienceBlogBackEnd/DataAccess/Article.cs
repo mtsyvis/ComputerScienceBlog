@@ -20,7 +20,7 @@ namespace ComputerScienceBlogBackEnd.DataAccess
 
         public Category[] Categories { get; set; }
 
-        [BsonIgnoreIfNull]
+        [BsonIgnoreIfDefault]
         public Comment[] Comments { get; set; }
     }
 }
