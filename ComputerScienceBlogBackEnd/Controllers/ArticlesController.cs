@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using ComputerScienceBlogBackEnd.DataAccess;
 using ComputerScienceBlogBackEnd.Infrastructure.Filters;
 using ComputerScienceBlogBackEnd.Services.ArticleManagement;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ComputerScienceBlogBackEnd.Controllers
@@ -40,6 +41,7 @@ namespace ComputerScienceBlogBackEnd.Controllers
 
         [HttpPost]
         [Route("")]
+        [Authorize]
         public async Task<ActionResult> CreateArticleAsync([FromBody] Article article)
         {
             if (!ModelState.IsValid)
@@ -47,13 +49,15 @@ namespace ComputerScienceBlogBackEnd.Controllers
                 return BadRequest(ModelState);
             }
 
+            article.CreatedUser = User.Identity.Name;
             await _articleService.CreateAsync(article);
-           
-            return CreatedAtRoute($"api/articles/{article.Id}", article);
+
+            return Ok(article);
         }
 
         [HttpPost]
         [Route("{articleId:length(24)}/comment")]
+        [Authorize]
         public async Task<ActionResult> AddCommentAsync([FromRoute] string articleId, [FromBody] Comment comment)
         {
             if (articleId is null)
@@ -66,13 +70,15 @@ namespace ComputerScienceBlogBackEnd.Controllers
                 return BadRequest(ModelState);
             }
 
+            comment.CreatedUser = User.Identity.Name;
             await _articleService.AddCommentAsync(articleId, comment);
 
-            return Ok();
+            return Ok(comment);
         }
 
         [HttpPut]
         [Route("{id:length(24)}")]
+        [Authorize]
         public async Task<ActionResult> UpdateArticleAsync([FromRoute] string id, [FromBody] Article articleIn)
         {
             if (id is null)
@@ -87,7 +93,7 @@ namespace ComputerScienceBlogBackEnd.Controllers
 
             await _articleService.UpdateAsync(id, articleIn);
 
-            return CreatedAtAction($"api/articles/{id}", articleIn);
+            return Ok(articleIn);
         }
 
         [HttpDelete]
