@@ -66,6 +66,8 @@ namespace ComputerScienceBlogBackEnd
                     c.RoutePrefix = string.Empty;
                 });
 
+            app.UseCors("CorsPolicy");
+
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseMvc(routes =>
@@ -92,6 +94,16 @@ namespace ComputerScienceBlogBackEnd
 
             services.AddTransient<IValidator<Article>, ArticleValidator>()
                 .AddTransient<IValidator<Comment>, CommentValidator>();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder
+                    .SetIsOriginAllowed((host) => true)
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials());
+            });
 
             return services;
         }

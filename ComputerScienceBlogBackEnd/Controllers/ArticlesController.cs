@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ComputerScienceBlogBackEnd.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/articles")]
     [ApiController]
     [HttpGlobalExceptionFilter]
     public class ArticlesController : ControllerBase
@@ -19,13 +19,15 @@ namespace ComputerScienceBlogBackEnd.Controllers
         }
 
         [HttpGet]
+        [Route("")]
         public async Task<IActionResult> GetAllAsync()
         {
             var articles = await _articleService.GetAllAsync();
             return Ok(articles);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet]
+        [Route("{id:length(24)}")]
         public async Task<IActionResult> GetArticleAsync(string id)
         {
             var article = await _articleService.GetByIdAsync(id);
@@ -34,7 +36,8 @@ namespace ComputerScienceBlogBackEnd.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Article>> CreateAsync(Article article)
+        [Route("")]
+        public async Task<ActionResult<Article>> CreateArticleAsync([FromBody] Article article)
         {
             if (!ModelState.IsValid)
             {
@@ -43,10 +46,11 @@ namespace ComputerScienceBlogBackEnd.Controllers
 
             await _articleService.CreateAsync(article);
            
-            return CreatedAtRoute("", new { id = article.Id.ToString() }, article);
+            return CreatedAtRoute($"api/articles/{article.Id}", article);
         }
 
-        [HttpPost("{articleId:length(24)}")]
+        [HttpPost]
+        [Route("{articleId:length(24)}/comment")]
         public async Task<IActionResult> AddCommentAsync([FromRoute] string articleId, [FromBody] Comment comment)
         {
             if (!ModelState.IsValid)
@@ -55,28 +59,27 @@ namespace ComputerScienceBlogBackEnd.Controllers
             }
 
             await _articleService.AddCommentAsync(articleId, comment);
-            //var article = _articleService.GetById(articleId);
 
-            //return CreatedAtAction(nameof(ItemByIdAsync), new { id = productToUpdate.Id }, null);
             return Ok();
         }
 
-        [HttpPut("{id:length(24)}")]
-        public async Task<IActionResult> UpdateAsync([FromRoute] string id, [FromBody] Article userIn)
+        [HttpPut]
+        [Route("{id:length(24)}")]
+        public async Task<IActionResult> UpdateArticleAsync([FromRoute] string id, [FromBody] Article articleIn)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            await _articleService.UpdateAsync(id, userIn);
+            await _articleService.UpdateAsync(id, articleIn);
 
-            return Ok();
-            //return CreatedAtAction(nameof(ItemByIdAsync), new { id = productToUpdate.Id }, null);
+            return CreatedAtAction($"api/articles/{id}", articleIn);
         }
 
-        [HttpDelete("{id:length(24)}")]
-        public async Task<IActionResult> DeleteAsync(string id)
+        [HttpDelete]
+        [Route("{id:length(24)}")]
+        public async Task<IActionResult> DeleteArticleAsync(string id)
         {
             var user = await _articleService.GetByIdAsync(id);
 
