@@ -25,28 +25,21 @@ namespace ComputerScienceBlogBackEnd.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var articles = _articleService.GetAll();
+            var articles = await _articleService.GetAll();
             return Ok(articles);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetArticle(string id)
+        public async Task<IActionResult> GetArticle(string id)
         {
-            var article = _articleService.GetById(id);
+            var article = await _articleService.GetById(id);
 
             if (article == null)
             {
                 return NotFound();
             }
-
-            // only allow admins to access other user records
-            //var currentUserId = User.Identity.Name;
-            //if (id != currentUserId && !User.IsInRole(Role.Admin))
-            //{
-            //    return Forbid();
-            //}
 
             return Ok(article);
         }
@@ -60,33 +53,33 @@ namespace ComputerScienceBlogBackEnd.Controllers
         }
 
         [HttpPost("{articleId:length(24)}")]
-        public IActionResult AddComment([FromRoute] string articleId, [FromBody] Comment comment)
+        public async Task<IActionResult> AddComment([FromRoute] string articleId, [FromBody] Comment comment)
         {
-            _articleService.AddComment(articleId, comment);
-            var article = _articleService.GetById(articleId);
+            await _articleService.AddComment(articleId, comment);
+            //var article = _articleService.GetById(articleId);
 
-            return Ok(article);
+            return Ok();
         }
 
         [HttpPut("{id:length(24)}")]
-        public IActionResult Update(string id, Article userIn)
+        public async Task<IActionResult> Update(string id, Article userIn)
         {
-            var user = _articleService.GetById(id);
+            var user = await _articleService.GetById(id);
 
             if (user == null)
             {
                 return NotFound();
             }
 
-            _articleService.Update(id, userIn);
+            await _articleService.Update(id, userIn);
 
             return NoContent();
         }
 
         [HttpDelete("{id:length(24)}")]
-        public IActionResult Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
-            var user = _articleService.GetById(id);
+            var user = await _articleService.GetById(id);
 
             if (user == null)
             {

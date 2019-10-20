@@ -8,18 +8,18 @@ namespace ComputerScienceBlogBackEnd.Services.ArticleManagement
     {
         Task Create(Article articleIn);
 
-        void Update(string id, Article articleIn);
+        Task Update(string id, Article articleIn);
 
-        void Remove(string id);
+        Task Remove(string id);
 
-        Article GetById(string id);
+        Task<Article> GetById(string id);
 
-        List<Article> GetAll();
+        Task<List<Article>> GetAll();
 
-        void AddComment(string articleId, Comment comment);
+        Task AddComment(string articleId, Comment comment);
 
-        List<Article> GetByPartialTitle(string title);
+        Task<List<Article>> GetByPartialTitle(string title);
 
-        List<Article> GetByCategory(string category);
+        Task<List<Article>> GetByCategory(string category);
     }
 }

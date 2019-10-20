@@ -18,12 +18,23 @@ namespace ComputerScienceBlogBackEnd.Infrastructure.Filters
                 {
                     Instance = context.HttpContext.Request.Path,
                     Status = StatusCodes.Status409Conflict,
-                    Detail = "Please refer to the errors property for additional details."
                 };
 
                 problemDetails.Errors.Add("DomainValidations", new string[] { context.Exception.Message.ToString() });
                 context.Result = new ConflictObjectResult(problemDetails);
                 context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Conflict;
+            }
+            else if (context.Exception is RequestedResourceNotFoundException)
+            {
+                var problemDetails = new ValidationProblemDetails()
+                {
+                    Instance = context.HttpContext.Request.Path,
+                    Status = StatusCodes.Status404NotFound
+                };
+
+                problemDetails.Errors.Add("DomainValidations", new string[] { context.Exception.Message.ToString() });
+                context.Result = new NotFoundObjectResult(problemDetails);
+                context.HttpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
             }
             else
             {
