@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using ComputerScienceBlogBackEnd.DataAccess;
 using ComputerScienceBlogBackEnd.Infrastructure.Exceptions;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace ComputerScienceBlogBackEnd.Services.ArticleManagement
@@ -21,13 +20,13 @@ namespace ComputerScienceBlogBackEnd.Services.ArticleManagement
             _articles = database.GetCollection<Article>(settings.ArticlesCollectionName);
         }
 
-        public async Task AddComment(string articleId, Comment comment)
+        public async Task AddCommentAsync(string articleId, Comment comment)
         {
             using (var cursor = await _articles.FindAsync(article => article.Id == articleId))
             {
                 if (! await cursor.MoveNextAsync())
                 {
-                    throw new RequestedResourceNotFoundException("User can't create a post with already existing article title");
+                    throw new RequestedResourceNotFoundException();
                 }
             }
 
@@ -38,54 +37,58 @@ namespace ComputerScienceBlogBackEnd.Services.ArticleManagement
             await _articles.UpdateOneAsync(filter, update);
         }
 
-        public async Task Create(Article articleIn)
+        public async Task CreateAsync(Article articleIn)
         {
-            //var dbArticles = await _articles.Find(article => article.Title == articleIn.Title).ToListAsync();
+            var dbArticles = await _articles.Find(article => article.Title == articleIn.Title).ToListAsync();
 
-            //if (dbArticles.Count > 0)
-            //{
-            //    throw new RequestedResourceHasConflictException("User can't create a post with already existing article title");
-            //}
-
-            using (var cursor = await _articles.FindAsync(article => article.Title == articleIn.Title))
+            if (dbArticles.Count > 0)
             {
-                if (await cursor.MoveNextAsync())
-                {
-                    throw new RequestedResourceHasConflictException("User can't create a post with already existing article title");
-                }
+                throw new RequestedResourceHasConflictException("User can't create a post with already existing article title");
             }
+
+            //using (var cursor = await _articles.FindAsync(article => article.Title == articleIn.Title))
+            //{
+            //    if (await cursor.MoveNextAsync())
+            //    {
+            //        throw new RequestedResourceHasConflictException("User can't create a post with already existing article title");
+            //    }
+            //}
 
             _articles.InsertOne(articleIn);
         }
 
-        public async Task<List<Article>> GetAll() => await _articles.Find(article => true).ToListAsync();
+        public async Task<List<Article>> GetAllAsync() => await _articles.Find(article => true).ToListAsync();
 
-        public Task<List<Article>> GetByCategory(string category)
+        public Task<List<Article>> GetByCategoryAsync(string category)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Article> GetById(string id)
+        public async Task<Article> GetByIdAsync(string id)
         {
             var dbArticles = await _articles.Find(article => article.Id == id).ToListAsync();
 
             if (dbArticles.Count == 0)
             {
-                throw new RequestedResourceNotFoundException("User can't create a post with already existing article title");
+                throw new RequestedResourceNotFoundException();
             }
 
             return dbArticles[0];
         }
 
-        public Task<List<Article>> GetByPartialTitle(string title)
+        public Task<List<Article>> GetByPartialTitleAsync(string title)
         {
             throw new NotImplementedException();
         }
 
-        public async Task Remove(string id) =>
-            _articles.DeleteOne(article => article.Id == id);
+        public async Task RemoveAsync(string id)
+        {
+            await _articles.DeleteOneAsync(article => article.Id == id);
+        }
 
-        public async Task Update(string id, Article articleIn) =>
-            _articles.ReplaceOne(article => article.Id == id, articleIn);
+        public async Task UpdateAsync(string id, Article articleIn)
+        {
+            await _articles.ReplaceOneAsync(article => article.Id == id, articleIn);
+        }
     }
 }

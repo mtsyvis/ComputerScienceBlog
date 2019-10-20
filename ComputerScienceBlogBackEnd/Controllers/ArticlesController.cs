@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using ComputerScienceBlogBackEnd.DataAccess;
-using ComputerScienceBlogBackEnd.Infrastructure.Exceptions;
 using ComputerScienceBlogBackEnd.Infrastructure.Filters;
 using ComputerScienceBlogBackEnd.Services.ArticleManagement;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ComputerScienceBlogBackEnd.Controllers
@@ -25,68 +19,68 @@ namespace ComputerScienceBlogBackEnd.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
-            var articles = await _articleService.GetAll();
+            var articles = await _articleService.GetAllAsync();
             return Ok(articles);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetArticle(string id)
+        public async Task<IActionResult> GetArticleAsync(string id)
         {
-            var article = await _articleService.GetById(id);
-
-            if (article == null)
-            {
-                return NotFound();
-            }
+            var article = await _articleService.GetByIdAsync(id);
 
             return Ok(article);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Article>> Create(Article article)
+        public async Task<ActionResult<Article>> CreateAsync(Article article)
         {
-            await _articleService.Create(article);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await _articleService.CreateAsync(article);
            
             return CreatedAtRoute("", new { id = article.Id.ToString() }, article);
         }
 
         [HttpPost("{articleId:length(24)}")]
-        public async Task<IActionResult> AddComment([FromRoute] string articleId, [FromBody] Comment comment)
+        public async Task<IActionResult> AddCommentAsync([FromRoute] string articleId, [FromBody] Comment comment)
         {
-            await _articleService.AddComment(articleId, comment);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await _articleService.AddCommentAsync(articleId, comment);
             //var article = _articleService.GetById(articleId);
 
+            //return CreatedAtAction(nameof(ItemByIdAsync), new { id = productToUpdate.Id }, null);
             return Ok();
         }
 
         [HttpPut("{id:length(24)}")]
-        public async Task<IActionResult> Update(string id, Article userIn)
+        public async Task<IActionResult> UpdateAsync([FromRoute] string id, [FromBody] Article userIn)
         {
-            var user = await _articleService.GetById(id);
-
-            if (user == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return BadRequest(ModelState);
             }
 
-            await _articleService.Update(id, userIn);
+            await _articleService.UpdateAsync(id, userIn);
 
-            return NoContent();
+            return Ok();
+            //return CreatedAtAction(nameof(ItemByIdAsync), new { id = productToUpdate.Id }, null);
         }
 
         [HttpDelete("{id:length(24)}")]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> DeleteAsync(string id)
         {
-            var user = await _articleService.GetById(id);
+            var user = await _articleService.GetByIdAsync(id);
 
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            _articleService.Remove(user.Id);
+            await _articleService.RemoveAsync(user.Id);
 
             return NoContent();
         }

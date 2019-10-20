@@ -6,20 +6,20 @@ namespace ComputerScienceBlogBackEnd.Services.ArticleManagement
 {
     public interface IArticleService
     {
-        Task Create(Article articleIn);
+        Task CreateAsync(Article articleIn);
 
-        Task Update(string id, Article articleIn);
+        Task UpdateAsync(string id, Article articleIn);
 
-        Task Remove(string id);
+        Task RemoveAsync(string id);
 
-        Task<Article> GetById(string id);
+        Task<Article> GetByIdAsync(string id);
 
-        Task<List<Article>> GetAll();
+        Task<List<Article>> GetAllAsync();
 
-        Task AddComment(string articleId, Comment comment);
+        Task AddCommentAsync(string articleId, Comment comment);
 
-        Task<List<Article>> GetByPartialTitle(string title);
+        Task<List<Article>> GetByPartialTitleAsync(string title);
 
-        Task<List<Article>> GetByCategory(string category);
+        Task<List<Article>> GetByCategoryAsync(string category);
     }
 }

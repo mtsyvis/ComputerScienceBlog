@@ -13,6 +13,9 @@ using System.Text;
 using ComputerScienceBlogBackEnd.Repositories;
 using ComputerScienceBlogBackEnd.Services.ArticleManagement;
 using ComputerScienceBlogBackEnd.Infrastructure.Filters;
+using FluentValidation.AspNetCore;
+using FluentValidation;
+using ComputerScienceBlogBackEnd.DataAccess.Validators;
 
 namespace ComputerScienceBlogBackEnd
 {
@@ -35,8 +38,6 @@ namespace ComputerScienceBlogBackEnd
             services.Configure<ComputerScienceBlogDatabaseSettings>(Configuration.GetSection(nameof(ComputerScienceBlogDatabaseSettings)));
             services.AddSingleton<IComputerScienceBlogDatabaseSettings>(sp =>
                 sp.GetRequiredService<IOptions<ComputerScienceBlogDatabaseSettings>>().Value);
-
-          
 
             // configure DI for application services
             services.AddScoped<IUserRepository, UserRepository>()
@@ -86,8 +87,11 @@ namespace ComputerScienceBlogBackEnd
                 options.Filters.Add(typeof(HttpGlobalExceptionFilter));
             })
                 .AddJsonOptions(options => options.UseMemberCasing())
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            //.AddControllersAsServices();
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                .AddFluentValidation();
+
+            services.AddTransient<IValidator<Article>, ArticleValidator>()
+                .AddTransient<IValidator<Comment>, CommentValidator>();
 
             return services;
         }
