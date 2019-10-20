@@ -1,25 +1,18 @@
 ﻿using ComputerScienceBlogBackEnd.Infrastructure.ActionResults;
 using ComputerScienceBlogBackEnd.Infrastructure.Exceptions;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System;
 using System.Net;
 
 namespace ComputerScienceBlogBackEnd.Infrastructure.Filters
 {
-    public class HttpGlobalExceptionFilter : IExceptionFilter
+    public class HttpGlobalExceptionFilter : Attribute, IExceptionFilter
     {
-        private readonly IHostingEnvironment env;
-
-        public HttpGlobalExceptionFilter(IHostingEnvironment env)
-        {
-            this.env = env;
-        }
-
         public void OnException(ExceptionContext context)
         {
-            if (context.Exception.GetType() == typeof(RequestedResourceHasConflictException))
+            if (context.Exception is RequestedResourceHasConflictException)
             {
                 var problemDetails = new ValidationProblemDetails()
                 {
@@ -29,8 +22,7 @@ namespace ComputerScienceBlogBackEnd.Infrastructure.Filters
                 };
 
                 problemDetails.Errors.Add("DomainValidations", new string[] { context.Exception.Message.ToString() });
-
-                context.Result = new BadRequestObjectResult(problemDetails);
+                context.Result = new ConflictObjectResult(problemDetails);
                 context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Conflict;
             }
             else
@@ -39,11 +31,6 @@ namespace ComputerScienceBlogBackEnd.Infrastructure.Filters
                 {
                     Messages = new[] { "An error ocurred." }
                 };
-
-                if (env.IsDevelopment())
-                {
-                    json.DeveloperMessage = context.Exception;
-                }
 
                 context.Result = new InternalServerErrorObjectResult(json);
                 context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;

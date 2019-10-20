@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ComputerScienceBlogBackEnd.DataAccess;
+using ComputerScienceBlogBackEnd.Infrastructure.Exceptions;
+using ComputerScienceBlogBackEnd.Infrastructure.Filters;
 using ComputerScienceBlogBackEnd.Services.ArticleManagement;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,6 +14,7 @@ namespace ComputerScienceBlogBackEnd.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [HttpGlobalExceptionFilter]
     public class ArticlesController : ControllerBase
     {
         private readonly IArticleService _articleService;
@@ -50,9 +54,18 @@ namespace ComputerScienceBlogBackEnd.Controllers
         [HttpPost]
         public async Task<ActionResult<Article>> Create(Article article)
         {
-            _articleService.Create(article);
-
+            await _articleService.Create(article);
+           
             return CreatedAtRoute("", new { id = article.Id.ToString() }, article);
+        }
+
+        [HttpPost("{articleId:length(24)}")]
+        public IActionResult AddComment([FromRoute] string articleId, [FromBody] Comment comment)
+        {
+            _articleService.AddComment(articleId, comment);
+            var article = _articleService.GetById(articleId);
+
+            return Ok(article);
         }
 
         [HttpPut("{id:length(24)}")]

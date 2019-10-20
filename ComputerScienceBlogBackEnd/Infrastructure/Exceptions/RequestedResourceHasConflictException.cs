@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 
 namespace ComputerScienceBlogBackEnd.Infrastructure.Exceptions
 {
+    [Serializable]
     public class RequestedResourceHasConflictException : Exception
     {
         public RequestedResourceHasConflictException()
