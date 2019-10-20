@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using ComputerScienceBlogBackEnd.DataAccess;
 using ComputerScienceBlogBackEnd.Infrastructure.Filters;
 using ComputerScienceBlogBackEnd.Services.ArticleManagement;
@@ -20,24 +21,26 @@ namespace ComputerScienceBlogBackEnd.Controllers
 
         [HttpGet]
         [Route("")]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<ActionResult<List<Article>>> GetAllAsync()
         {
-            var articles = await _articleService.GetAllAsync();
-            return Ok(articles);
+            return await _articleService.GetAllAsync();
         }
 
         [HttpGet]
         [Route("{id:length(24)}")]
-        public async Task<IActionResult> GetArticleAsync(string id)
+        public async Task<ActionResult<Article>> GetArticleAsync(string id)
         {
-            var article = await _articleService.GetByIdAsync(id);
+            if (id is null)
+            {
+                return BadRequest(id);
+            }
 
-            return Ok(article);
+            return await _articleService.GetByIdAsync(id);
         }
 
         [HttpPost]
         [Route("")]
-        public async Task<ActionResult<Article>> CreateArticleAsync([FromBody] Article article)
+        public async Task<ActionResult> CreateArticleAsync([FromBody] Article article)
         {
             if (!ModelState.IsValid)
             {
@@ -51,8 +54,13 @@ namespace ComputerScienceBlogBackEnd.Controllers
 
         [HttpPost]
         [Route("{articleId:length(24)}/comment")]
-        public async Task<IActionResult> AddCommentAsync([FromRoute] string articleId, [FromBody] Comment comment)
+        public async Task<ActionResult> AddCommentAsync([FromRoute] string articleId, [FromBody] Comment comment)
         {
+            if (articleId is null)
+            {
+                return BadRequest(articleId);
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -65,8 +73,13 @@ namespace ComputerScienceBlogBackEnd.Controllers
 
         [HttpPut]
         [Route("{id:length(24)}")]
-        public async Task<IActionResult> UpdateArticleAsync([FromRoute] string id, [FromBody] Article articleIn)
+        public async Task<ActionResult> UpdateArticleAsync([FromRoute] string id, [FromBody] Article articleIn)
         {
+            if (id is null)
+            {
+                return BadRequest(id);
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -79,8 +92,13 @@ namespace ComputerScienceBlogBackEnd.Controllers
 
         [HttpDelete]
         [Route("{id:length(24)}")]
-        public async Task<IActionResult> DeleteArticleAsync(string id)
+        public async Task<ActionResult> DeleteArticleAsync(string id)
         {
+            if (id is null)
+            {
+                return BadRequest(id);
+            }
+
             var user = await _articleService.GetByIdAsync(id);
 
             await _articleService.RemoveAsync(user.Id);

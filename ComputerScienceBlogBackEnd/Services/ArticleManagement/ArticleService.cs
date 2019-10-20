@@ -46,14 +46,6 @@ namespace ComputerScienceBlogBackEnd.Services.ArticleManagement
                 throw new RequestedResourceHasConflictException("User can't create a post with already existing article title");
             }
 
-            //using (var cursor = await _articles.FindAsync(article => article.Title == articleIn.Title))
-            //{
-            //    if (await cursor.MoveNextAsync())
-            //    {
-            //        throw new RequestedResourceHasConflictException("User can't create a post with already existing article title");
-            //    }
-            //}
-
             _articles.InsertOne(articleIn);
         }
 
