@@ -1,11 +1,12 @@
 ﻿using ComputerScienceBlogBackEnd.DataAccess;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ComputerScienceBlogBackEnd.Services.ArticleManagement
 {
     public interface IArticleService
     {
-        void Create(Article articleIn);
+        Task Create(Article articleIn);
 
         void Update(string id, Article articleIn);
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ComputerScienceBlogBackEnd.DataAccess;
+using ComputerScienceBlogBackEnd.Infrastructure.Exceptions;
 using MongoDB.Driver;
 
 namespace ComputerScienceBlogBackEnd.Services.ArticleManagement
@@ -24,12 +25,20 @@ namespace ComputerScienceBlogBackEnd.Services.ArticleManagement
             throw new NotImplementedException();
         }
 
-        public void Create(Article articleIn)
+        public async Task Create(Article articleIn)
         {
+            using(var cursor = await _articles.FindAsync(article=> article.Title == articleIn.Title))
+            {
+                if(await cursor.MoveNextAsync())
+                {
+                    throw new RequestedResourceHasConflictException("User can't create a post with already existing article title");
+                }
+            }
+
             _articles.InsertOne(articleIn);
         }
 
-        public List<Article> GetAll() => _articles.Find(user => true).ToList();
+        public List<Article> GetAll() => _articles.Find(article => true).ToList();
 
         public List<Article> GetByCategory(string category)
         {

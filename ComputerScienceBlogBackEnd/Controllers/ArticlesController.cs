@@ -48,7 +48,7 @@ namespace ComputerScienceBlogBackEnd.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Article> Create(Article article)
+        public async Task<ActionResult<Article>> Create(Article article)
         {
             _articleService.Create(article);
 
